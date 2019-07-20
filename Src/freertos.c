@@ -195,9 +195,11 @@ void MX_FREERTOS_Init(void) {
     
     #ifdef BMI088
     bmi_initialize();
-    thermal_ctrl_init();
     #endif
     
+    #ifdef enable_thermal_control
+    thermal_ctrl_init();
+    #endif
     
 
   /* USER CODE END RTOS_THREADS */
