@@ -13,7 +13,7 @@ struct imu_data_t   imu_data;
 
 uint16_t calibration_time= 5000;
 
-
+#ifdef ICM20602
 void    calibrate_imu(int n)
 {
     float offset_gyro_x = 0 ,offset_gyro_y = 0, offset_gyro_z = 0;
@@ -41,7 +41,7 @@ void    calibrate_imu(int n)
     FEE_WriteDataFloat(0x08, imu_data.offset.gyro_z);
 
 }
-#ifdef ICM20602
+
 void   get_imu_data(struct imu_data_t* data)
 {
     uint8_t rx[10];
