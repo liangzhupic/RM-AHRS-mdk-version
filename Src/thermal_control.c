@@ -6,7 +6,10 @@ BaseType_t result = pdFALSE;
 TaskHandle_t thermal_crtl_h;
 
 float temperature_f = 25.0;
-float thermal_Kp = 3, thermal_Ki = 0.2;
+float thermal_Kp = 30, thermal_Ki = 2;
+float Intergral = 0, err, out;
+
+//int stable_temperature = 45;
 
 void thermal_ctrl_task(void *p);
 
@@ -38,20 +41,20 @@ void thermal_ctrl_init(void)
 
 void thermal_ctrl_task(void *p)
 {
-  float Intergral = 0, err, out;
+  
   int pwm = 200;
   for(;;)
   {
     temperature_f = get_temperature();
     err = temperature_f - stable_temperature;
     out = err * thermal_Kp;
-    /*Intergral += err;
-    if(Intergral > 50)
-      Intergral = 50;
-    if(Intergral < -50)
-      Intergral = -50;
-    out += Intergral;*/
-    pwm -= out;
+    Intergral += err * thermal_Ki * (update_period/1000);
+    if(Intergral > 500)
+      Intergral = 500;
+    if(Intergral < -500)
+      Intergral = -500;
+    out += Intergral;
+    pwm = -out;
     limit_int( &pwm, 999, 0);
     TIM4->CCR3 = pwm;
     vTaskDelay(update_period);
