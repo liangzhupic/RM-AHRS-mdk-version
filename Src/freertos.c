@@ -56,6 +56,7 @@
 #include "ahrs.h"
 #include "uc_memory.h"
 #include "bmi_interface.h"
+#include "thermal_control.h"
 
 /* USER CODE BEGIN Includes */     
 
@@ -194,7 +195,10 @@ void MX_FREERTOS_Init(void) {
     
     #ifdef BMI088
     bmi_initialize();
+    thermal_ctrl_init();
     #endif
+    
+    
 
   /* USER CODE END RTOS_THREADS */
 
@@ -239,7 +243,7 @@ void StartDefaultTask(void const * argument)
 
 //    HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_10);
 //     xSemaphoreGive( ahrs_sem  );
-    printf("pit=%f rol=%f yaw=%f \r\n",EulerAngle.pitch*57.3, EulerAngle.roll*57.3, EulerAngle.yaw*57.3);
+    printf("pit=%f rol=%f yaw=%f tmp=%f \r\n",EulerAngle.pitch*57.3, EulerAngle.roll*57.3, EulerAngle.yaw*57.3, temperature_f);
 //   printf("pi");
     vTaskDelay(500);
   }

@@ -4,4 +4,6 @@
 #include  "icm_20602.h"
 #include "ahrs.h"
 
+float get_temperature(void);
+
 #endif

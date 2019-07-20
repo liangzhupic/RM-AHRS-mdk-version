@@ -139,6 +139,13 @@ void get_imu_data(struct imu_data_t* data)
     data->gyro_z = ((float)raw_gyro_bmi088.z  -  data->offset.gyro_z)* 1000 /32768/57.29578;
 }
 
+float get_temperature(void)
+{
+  int32_t tmp;
+  bmi08a_get_sensor_temperature(&dev, &tmp);
+  return ((float)tmp)/1000;
+}
+
 #endif
 
 

@@ -667,7 +667,7 @@
             <File>
               <FileName>thermal_control.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\thermal_control.c</FilePath>
+              <FilePath>..\Src\thermal_control.c</FilePath>
             </File>
           </Files>
         </Group>
