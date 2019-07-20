@@ -10,13 +10,13 @@
 * Add bmi088 sensor in the latest release
 * Use bmi088 sensor by default. You can change sensor written in code to match you board's sensor by changing the MACRO in ahrs.c 
 e.g. 
-```c 
- #define BMI088 1 
-// #define ICM20602 1
+```c
+ #define BMI088 
+// #define ICM20602 
 ```
 * Add a thermal control feature. There're only a few parameters used to tune.
 ```c
- #define enable_thermal_control 1
+ #define enable_thermal_control 
  #define update_period 1280
  #define stable_temperature 48
 ```  

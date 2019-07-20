@@ -4,7 +4,7 @@
 #include "tim.h"
 #include "bmi_interface.h"
 
-#define enable_thermal_control 1
+//#define enable_thermal_control 
 #define update_period 1280
 
 #define stable_temperature 48

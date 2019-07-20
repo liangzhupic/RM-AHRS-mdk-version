@@ -8,8 +8,8 @@
 #include "FreeRTOS.h"
 
 /* here define which gyroscope to be used */
-//#define ICM20602 1
-#define BMI088   1
+//#define ICM20602 
+#define BMI088   
 
 //----------------------------------------------------------------------------------------------------
 // Variable declaration
