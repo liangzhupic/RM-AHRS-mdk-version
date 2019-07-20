@@ -57,7 +57,16 @@ void thermal_ctrl_task(void *p)
     pwm = -out;
     limit_int( &pwm, 999, 0);
     TIM4->CCR3 = pwm;
-    vTaskDelay(update_period);
+    if(fabs(err) > 1)
+    {
+      HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_11);
+      vTaskDelay(update_period);
+    }
+    else{
+      HAL_GPIO_WritePin(GPIOB, GPIO_PIN_11, GPIO_PIN_SET);
+      vTaskDelay(update_period);
+    }
+    
   }
 }
 

@@ -20,3 +20,4 @@ e.g.
  #define update_period 1280
  #define stable_temperature 48
 ```  
+* Red LED (PB11) will blink when thermal control part under-temerature or over-temperature. Plz calibrate the sensor offset when LED off (means within +-0.75 centigrade ).
