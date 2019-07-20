@@ -7,7 +7,7 @@ TaskHandle_t thermal_crtl_h;
 
 float temperature_f = 25.0;
 float thermal_Kp = 30, thermal_Ki = 2;
-float Intergral = 0, err, out;
+float Intergral = -200, err, out;
 
 //int stable_temperature = 45;
 

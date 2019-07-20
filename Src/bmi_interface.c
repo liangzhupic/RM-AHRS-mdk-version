@@ -2,6 +2,9 @@
 #include "bmi088.h"
 #include "spi.h"
 #include "uc_memory.h"
+#include "thermal_control.h"
+#include "task.h"
+#include "math.h"
 
 struct bmi08x_sensor_data raw_gyro_bmi088;
 struct bmi08x_sensor_data raw_accel_bmi088;
@@ -87,19 +90,33 @@ void bmi_initialize(void)
 
     rslt = bmi08g_set_meas_conf(&dev);
   }
+  
+  // read offset data
+  FEE_Init();
+
+  imu_data.offset.gyro_x = FEE_ReadDataFloat(0x00);
+  imu_data.offset.gyro_y = FEE_ReadDataFloat(0x04);
+  imu_data.offset.gyro_z = FEE_ReadDataFloat(0x08);
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_11, GPIO_PIN_SET);
     
 }
 #ifdef BMI088 
 void calibrate_imu(int n)
 {
-    float offset_gyro_x = 0 ,offset_gyro_y = 0, offset_gyro_z = 0;
+    int64_t offset_gyro_x = 0 ,offset_gyro_y = 0, offset_gyro_z = 0;
     imu_data.offset.gyro_x = 0;
     imu_data.offset.gyro_y = 0;
     imu_data.offset.gyro_z = 0;
-
+    
+    while(fabs(get_temperature() - stable_temperature) > 0.1){
+      vTaskDelay(1500);
+    }
+    vTaskDelay(10000);
+    
     for(int i = 0; i< n; i++)
     {
-        HAL_Delay(1);
+        vTaskDelay(2);
+        //HAL_Delay(1);
         if( i%30 == 0 ){
             HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_11);
         }
@@ -108,9 +125,9 @@ void calibrate_imu(int n)
         offset_gyro_y += imu_data.raw.gyro_y;
         offset_gyro_z += imu_data.raw.gyro_z;
     }
-    imu_data.offset.gyro_x = offset_gyro_x/n;
-    imu_data.offset.gyro_y = offset_gyro_y/n;
-    imu_data.offset.gyro_z = offset_gyro_z/n;
+    imu_data.offset.gyro_x = (float)offset_gyro_x/n;
+    imu_data.offset.gyro_y = (float)offset_gyro_y/n;
+    imu_data.offset.gyro_z = (float)offset_gyro_z/n;
 
     FEE_WriteDataFloat(0x00, imu_data.offset.gyro_x);
     FEE_WriteDataFloat(0x04, imu_data.offset.gyro_y);
@@ -121,7 +138,7 @@ void calibrate_imu(int n)
 void get_imu_data(struct imu_data_t* data)
 {
     int8_t rslt;
-   
+    
     /* Read the sensor data into the sensor data instance */
     rslt = bmi08g_get_data(&raw_gyro_bmi088, &dev);
   
@@ -131,6 +148,11 @@ void get_imu_data(struct imu_data_t* data)
     // convert data in standard unit
     // accelerometer 3g
     // gyroscope 1000deg/s
+    
+    data->raw.gyro_x = raw_gyro_bmi088.x;
+    data->raw.gyro_y = raw_gyro_bmi088.y;
+    data->raw.gyro_z = raw_gyro_bmi088.z;
+    
     data->acc_x = ((float)raw_accel_bmi088.x * 3 )/32768;
     data->acc_y = ((float)raw_accel_bmi088.y * 3 )/32768;
     data->acc_z = ((float)raw_accel_bmi088.z * 3 )/32768;
