@@ -122,7 +122,7 @@ void vApplicationTickHook( void )
    called if a stack overflow is detected. */
      for(;;)
      {
-         printf("fatal error :  Application Stack Overflow !!!\r\n");
+       printf("fatal error :  Application: %s Stack Overflow !!!\r\n", pcTaskName);
      }
 }
 /* USER CODE END 4 */
@@ -171,7 +171,7 @@ void MX_FREERTOS_Init(void) {
 
     AhrsTaskCreate();
 
-    osThreadDef(defaultTask, StartDefaultTask, 4, 0, 512);
+    osThreadDef(defaultTask, StartDefaultTask, 4, 0, 256);
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
@@ -197,9 +197,9 @@ void MX_FREERTOS_Init(void) {
     bmi_initialize();
     #endif
     
-    #ifdef enable_thermal_control
+    //#ifdef enable_thermal_control
     thermal_ctrl_init();
-    #endif
+    //#endif
     
 
   /* USER CODE END RTOS_THREADS */

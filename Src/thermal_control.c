@@ -56,7 +56,11 @@ void thermal_ctrl_task(void *p)
     out += Intergral;
     pwm = -out;
     limit_int( &pwm, 999, 0);
+    
+    #ifdef enable_thermal_control 
+    
     TIM4->CCR3 = pwm;
+    
     if(fabs(err) > 1)
     {
       HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_11);
@@ -66,6 +70,13 @@ void thermal_ctrl_task(void *p)
       HAL_GPIO_WritePin(GPIOB, GPIO_PIN_11, GPIO_PIN_SET);
       vTaskDelay(update_period);
     }
+    #else
+    TIM4->CCR3 = 0;
+    vTaskDelay(update_period);
+    
+    #endif
+    
+    
     
   }
 }

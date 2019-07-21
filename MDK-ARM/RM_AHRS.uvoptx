@@ -182,25 +182,9 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>201</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>0</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>0</BreakIfRCount>
-          <Filename>../Src/freertos.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression></Expression>
-        </Bp>
-        <Bp>
-          <Number>1</Number>
-          <Type>0</Type>
           <LineNumber>155</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134220862</Address>
+          <Address>134220910</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -212,20 +196,36 @@
           <Expression>\\RM_AHRS\../Src/ahrs.c\155</Expression>
         </Bp>
         <Bp>
-          <Number>2</Number>
+          <Number>1</Number>
           <Type>0</Type>
-          <LineNumber>143</LineNumber>
+          <LineNumber>134</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134220828</Address>
+          <Address>134241298</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>..\Src\ahrs.c</Filename>
+          <Filename>..\Src\bmi_interface.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\RM_AHRS\../Src/ahrs.c\143</Expression>
+          <Expression>\\RM_AHRS\../Src/bmi_interface.c\134</Expression>
+        </Bp>
+        <Bp>
+          <Number>2</Number>
+          <Type>0</Type>
+          <LineNumber>125</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>134245178</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>../Src/freertos.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\RM_AHRS\../Src/freertos.c\125</Expression>
         </Bp>
       </Breakpoint>
       <WatchWindow1>
@@ -347,6 +347,14 @@
           <ItemText>EulerAngle.yaw*5729.5</ItemText>
         </Ww>
       </WatchWindow2>
+      <MemoryWindow1>
+        <Mm>
+          <WinNumber>1</WinNumber>
+          <SubType>1</SubType>
+          <ItemText>0x200023B8</ItemText>
+          <AccSizeX>0</AccSizeX>
+        </Mm>
+      </MemoryWindow1>
       <Tracepoint>
         <THDelay>0</THDelay>
       </Tracepoint>
@@ -359,7 +367,7 @@
         <aSer2>0</aSer2>
         <aPa>0</aPa>
         <viewmode>1</viewmode>
-        <vrSel>0</vrSel>
+        <vrSel>5</vrSel>
         <aSym>0</aSym>
         <aTbox>0</aTbox>
         <AscS1>0</AscS1>
@@ -691,7 +699,7 @@
       <GroupNumber>4</GroupNumber>
       <FileNumber>23</FileNumber>
       <FileType>1</FileType>
-      <tvExp>0</tvExp>
+      <tvExp>1</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
       <PathWithFileName>../Middlewares/Third_Party/FreeRTOS/Source/tasks.c</PathWithFileName>
@@ -995,7 +1003,7 @@
       <GroupNumber>6</GroupNumber>
       <FileNumber>47</FileNumber>
       <FileType>1</FileType>
-      <tvExp>1</tvExp>
+      <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
       <PathWithFileName>..\Src\ahrs.c</PathWithFileName>

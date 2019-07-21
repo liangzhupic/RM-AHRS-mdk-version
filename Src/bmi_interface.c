@@ -107,11 +107,15 @@ void calibrate_imu(int n)
     imu_data.offset.gyro_x = 0;
     imu_data.offset.gyro_y = 0;
     imu_data.offset.gyro_z = 0;
-    
+
+#ifdef enable_thermal_control 
+  
     while(fabs(get_temperature() - stable_temperature) > 0.1){
       vTaskDelay(1500);
     }
     vTaskDelay(10000);
+    
+#endif
     
     for(int i = 0; i< n; i++)
     {
