@@ -1,5 +1,6 @@
 # RM-AHRS-mdk-version
-
+## Update time
+23:11 2019/7/20
 ## Usage
 * Uncomment code block of CAN transmission in ahrs.c if using in RM i.e.
 ```c
