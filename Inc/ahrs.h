@@ -8,8 +8,14 @@
 #include "FreeRTOS.h"
 
 /* here define which gyroscope to be used */
+
 //#define ICM20602 
 #define BMI088   
+
+// Definitions
+
+#define sampleFreq	500		// sample frequency in Hz
+#define betaDef		0.1f		// 2 * proportional gain
 
 //----------------------------------------------------------------------------------------------------
 // Variable declaration

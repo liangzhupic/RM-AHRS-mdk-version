@@ -182,22 +182,6 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>155</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134220910</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>..\Src\ahrs.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\RM_AHRS\../Src/ahrs.c\155</Expression>
-        </Bp>
-        <Bp>
-          <Number>1</Number>
-          <Type>0</Type>
           <LineNumber>134</LineNumber>
           <EnabledFlag>1</EnabledFlag>
           <Address>134241298</Address>
@@ -212,11 +196,11 @@
           <Expression>\\RM_AHRS\../Src/bmi_interface.c\134</Expression>
         </Bp>
         <Bp>
-          <Number>2</Number>
+          <Number>1</Number>
           <Type>0</Type>
           <LineNumber>125</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134245178</Address>
+          <Address>134245186</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -339,12 +323,12 @@
         <Ww>
           <count>9</count>
           <WinNumber>2</WinNumber>
-          <ItemText>EulerAngle.roll*5729.5</ItemText>
+          <ItemText>EulerAngle.roll*57.295</ItemText>
         </Ww>
         <Ww>
           <count>10</count>
           <WinNumber>2</WinNumber>
-          <ItemText>EulerAngle.yaw*5729.5</ItemText>
+          <ItemText>EulerAngle.yaw*57.295</ItemText>
         </Ww>
       </WatchWindow2>
       <MemoryWindow1>

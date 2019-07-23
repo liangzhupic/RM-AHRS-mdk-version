@@ -29,12 +29,6 @@ void AHRS(void const *p);
 
 
 //---------------------------------------------------------------------------------------------------
-// Definitions
-
-#define sampleFreq	500.0f		// sample frequency in Hz
-#define betaDef		0.1f		// 2 * proportional gain
-
-//---------------------------------------------------------------------------------------------------
 // Variable definitions
 
 volatile float beta = betaDef;								// 2 * proportional gain (Kp)
@@ -152,7 +146,8 @@ void AhrsTask(void *p)
                break;
            case 0x30:
                CAN1_Send_Msg(0x81, 0x01,0,0,0,1);
-               calibrate_imu(calibration_time);
+
+           calibrate_imu(calibration_time);
                mode = 0x20;
                break;
            default:

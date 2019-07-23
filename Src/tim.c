@@ -50,6 +50,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "tim.h"
 #include "stm32f1xx_ll_tim.h"
+#include "ahrs.h"
 
 /* USER CODE BEGIN 0 */
 void Delayus(uint16_t t)
@@ -97,7 +98,7 @@ void MX_TIM1_Init(void)
   htim1.Instance = TIM1;
   htim1.Init.Prescaler = 71;
   htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim1.Init.Period = 2000- 1;  // 1ms interuption
+  htim1.Init.Period = 1000000/sampleFreq - 1;  // 1ms interuption
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim1.Init.RepetitionCounter = 0;
   htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;

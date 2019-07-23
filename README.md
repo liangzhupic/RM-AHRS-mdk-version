@@ -1,6 +1,6 @@
 # RM-AHRS-mdk-version
 ## Update time
-23:11 2019/7/20
+2019/7/23
 ## Usage
 * Uncomment code block of CAN transmission in ahrs.c if using in RM i.e.
 ```c
@@ -22,3 +22,7 @@ e.g.
  #define stable_temperature 48
 ```  
 * Red LED (PB11) will blink when thermal control part under-temerature or over-temperature. Plz calibrate the sensor offset when LED off (means within +-0.75 centigrade ).
+* Adjust the MACRO sampleFreq in ahrs.h to meet your project requirement
+```c
+ #define sampleFreq	500		// sample frequency in Hz
+```
