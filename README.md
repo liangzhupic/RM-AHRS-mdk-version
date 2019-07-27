@@ -26,3 +26,8 @@ e.g.
 ```c
  #define sampleFreq	500		// sample frequency in Hz
 ```
+* send acc data eliminated gravity to can bus while canid = canid + 2
+```c
+//send acc data eliminated gravity  
+//CAN1_Send_Msg(Can_ID+2, (int16_t)(imu_data.Acc_without_gravity.acc_x * 10000), (int16_t)(imu_data.Acc_without_gravity.acc_x * 10000), (int16_t)(imu_data.Acc_without_gravity.acc_x * 10000) , 0, 3);
+```

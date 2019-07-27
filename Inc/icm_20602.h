@@ -39,6 +39,14 @@ struct imu_data_t
         int16_t gyro_y;
         int16_t gyro_z;
     }raw;
+    
+    struct Acc_without_gravity_t
+    {
+      float   acc_x;
+      float   acc_y;
+      float   acc_z;
+    }Acc_without_gravity;
+    
     struct offset_t
     {
         float gyro_x;

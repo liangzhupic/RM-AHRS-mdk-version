@@ -65,7 +65,7 @@ extern SemaphoreHandle_t ahrs_sem;
 // Function declarations
 
 void AHRSCalulation(struct imu_data_t , quaternion*);
-void IMUCalulation(struct imu_data_t , quaternion*);
+void IMUCalulation(struct imu_data_t* , quaternion*);
 void AHRSupdate(float gx, float gy, float gz, float ax, float ay, float az, float mx, float my, float mz,quaternion *);
 
 void AhrsTaskCreate(void);

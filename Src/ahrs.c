@@ -116,7 +116,7 @@ void AhrsTask(void *p)
            }
            if(adi_heart_beat > 0)
               adi_heart_beat--;
-           IMUCalulation(imu_data ,&NormoliseQuaternion);
+           IMUCalulation(&imu_data ,&NormoliseQuaternion);
            ref_g.x = 2*(NormoliseQuaternion.q1*NormoliseQuaternion.q3 - NormoliseQuaternion.q0*NormoliseQuaternion.q2);
            ref_g.y = 2*(NormoliseQuaternion.q0*NormoliseQuaternion.q1 + NormoliseQuaternion.q2*NormoliseQuaternion.q3);
            ref_g.z = 1 - 2*(NormoliseQuaternion.q1*NormoliseQuaternion.q1 + NormoliseQuaternion.q2*NormoliseQuaternion.q2);
@@ -143,6 +143,8 @@ void AhrsTask(void *p)
 //							 CAN1_Send_Msg(Can_ID+1, (int16_t)(EulerAngle.pitch*5729.5), (int16_t)(EulerAngle.roll*5729.5), (int16_t)(EulerAngle.yaw*5729.5) , 0, 3);
 								 //CAN1_Send_Msg(Can_ID+1, (int16_t)(imu_data.gyro_x*1000), 			(int16_t)(imu_data.gyro_z*1000) , \
 								//												 (int16_t)(EulerAngle.pitch*5729.5), (int16_t)(EulerAngle.yaw*5729.5), 4);
+                //send acc data eliminated gravity  
+                //CAN1_Send_Msg(Can_ID+2, (int16_t)(imu_data.Acc_without_gravity.acc_x * 10000), (int16_t)(imu_data.Acc_without_gravity.acc_x * 10000), (int16_t)(imu_data.Acc_without_gravity.acc_x * 10000) , 0, 3);
                break;
            case 0x30:
                CAN1_Send_Msg(0x81, 0x01,0,0,0,1);
@@ -187,7 +189,7 @@ void AHRSCalulation(struct imu_data_t data,quaternion *q) {
 
     // Use IMU algorithm if magnetometer measurement invalid (avoids NaN in magnetometer normalisation)
     if((mx == 0.0f) && (my == 0.0f) && (mz == 0.0f)) {
-        IMUCalulation(imu_data , q);
+        IMUCalulation(&imu_data , q);
         return;
     }
 
@@ -284,19 +286,21 @@ void AHRSCalulation(struct imu_data_t data,quaternion *q) {
 //---------------------------------------------------------------------------------------------------
 // IMU algorithm update
 
-void IMUCalulation(struct imu_data_t data,quaternion *q) {
+void IMUCalulation(struct imu_data_t *data,quaternion *q) {
     /************init imu data*******/
-    float ax= data.acc_x;
-    float ay= data.acc_y;
-    float az= data.acc_z;
-    float gx= data.gyro_x;
-    float gy= data.gyro_y;
-    float gz= data.gyro_z;
+    float ax= data->acc_x;
+    float ay= data->acc_y;
+    float az= data->acc_z;
+    float gx= data->gyro_x;
+    float gy= data->gyro_y;
+    float gz= data->gyro_z;
 
     float recipNorm;
     float s0, s1, s2, s3;
     float qDot1, qDot2, qDot3, qDot4;
     float _2q0, _2q1, _2q2, _2q3, _4q0, _4q1, _4q2 ,_8q1, _8q2, q0q0, q1q1, q2q2, q3q3;
+  
+    float vx, vy, vz;
 
     // Rate of change of quaternion from gyroscope 陀螺仪四元数变化率
     qDot1 = 0.5f * (-q1 * gx - q2 * gy - q3 * gz);
@@ -312,9 +316,16 @@ void IMUCalulation(struct imu_data_t data,quaternion *q) {
         ax *= recipNorm;
         ay *= recipNorm;
         az *= recipNorm;
-
-
-
+        
+        //estimate the gravity
+        vx = 2*(q1 * q3 - q0 * q2);
+        vy = 2*(q0 * q1 + q2 * q3);
+        vz = q0 * q0 - q1 * q1 - q2 * q2 + q3 * q3;
+        
+        data->Acc_without_gravity.acc_x = ax - vx;
+        data->Acc_without_gravity.acc_y = ay - vy;
+        data->Acc_without_gravity.acc_z = az - vz;
+      
         // Auxiliary variables to avoid repeated arithmetic
         _2q0 = 2.0f * q0;
         _2q1 = 2.0f * q1;
