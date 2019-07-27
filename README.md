@@ -31,3 +31,4 @@ e.g.
 //send acc data eliminated gravity  
 //CAN1_Send_Msg(Can_ID+2, (int16_t)(imu_data.Acc_without_gravity.acc_x * 10000), (int16_t)(imu_data.Acc_without_gravity.acc_x * 10000), (int16_t)(imu_data.Acc_without_gravity.acc_x * 10000) , 0, 3);
 ```
+* Red LED will blink 5 times in the initial procedure if sensor isn't calibrated. In this case, sensor offset will be clear to zero and you should calibrate it right now.

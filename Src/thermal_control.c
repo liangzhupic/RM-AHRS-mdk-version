@@ -27,7 +27,7 @@ void thermal_ctrl_init(void)
 {
   result = xTaskCreate(thermal_ctrl_task,
               "thermal_ctrl",
-              64,
+              128,
               (void*)1 ,
                10,
               &thermal_crtl_h

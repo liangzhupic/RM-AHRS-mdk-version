@@ -97,6 +97,16 @@ void bmi_initialize(void)
   imu_data.offset.gyro_x = FEE_ReadDataFloat(0x00);
   imu_data.offset.gyro_y = FEE_ReadDataFloat(0x04);
   imu_data.offset.gyro_z = FEE_ReadDataFloat(0x08);
+  if(isnan(imu_data.offset.gyro_x) || isnan(imu_data.offset.gyro_x) || isnan(imu_data.offset.gyro_x))
+  {
+    imu_data.offset.gyro_x = 0;
+    imu_data.offset.gyro_y = 0;
+    imu_data.offset.gyro_z = 0;
+    for(int i = 0; i < 10; i++){
+      HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_11);
+      HAL_Delay(80);
+    }
+  }
   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_11, GPIO_PIN_SET);
     
 }
@@ -129,6 +139,9 @@ void calibrate_imu(int n)
         offset_gyro_y += imu_data.raw.gyro_y;
         offset_gyro_z += imu_data.raw.gyro_z;
     }
+    
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_11, GPIO_PIN_SET);
+    
     imu_data.offset.gyro_x = (float)offset_gyro_x/n;
     imu_data.offset.gyro_y = (float)offset_gyro_y/n;
     imu_data.offset.gyro_z = (float)offset_gyro_z/n;
