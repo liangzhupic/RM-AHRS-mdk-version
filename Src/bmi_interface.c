@@ -107,6 +107,9 @@ void bmi_initialize(void)
       HAL_Delay(80);
     }
   }
+  imu_data.offset.acc_ratio = FEE_ReadDataFloat(0x0C);
+  if(isnan(imu_data.offset.acc_ratio))
+    imu_data.offset.acc_ratio = 1;
   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_11, GPIO_PIN_SET);
     
 }
@@ -117,6 +120,7 @@ void calibrate_imu(int n)
     imu_data.offset.gyro_x = 0;
     imu_data.offset.gyro_y = 0;
     imu_data.offset.gyro_z = 0;
+    double acc_ratio_offset = 0;
 
 #ifdef enable_thermal_control 
   
@@ -126,7 +130,7 @@ void calibrate_imu(int n)
     vTaskDelay(10000);
     
 #endif
-    
+
     for(int i = 0; i< n; i++)
     {
         vTaskDelay(2);
@@ -138,6 +142,8 @@ void calibrate_imu(int n)
         offset_gyro_x += imu_data.raw.gyro_x;
         offset_gyro_y += imu_data.raw.gyro_y;
         offset_gyro_z += imu_data.raw.gyro_z;
+        
+        acc_ratio_offset += sqrt(imu_data.acc_x * imu_data.acc_x + imu_data.acc_y * imu_data.acc_y + imu_data.acc_z * imu_data.acc_z);
     }
     
     HAL_GPIO_WritePin(GPIOB, GPIO_PIN_11, GPIO_PIN_SET);
@@ -145,11 +151,12 @@ void calibrate_imu(int n)
     imu_data.offset.gyro_x = (float)offset_gyro_x/n;
     imu_data.offset.gyro_y = (float)offset_gyro_y/n;
     imu_data.offset.gyro_z = (float)offset_gyro_z/n;
+    imu_data.offset.acc_ratio = acc_ratio_offset/n;
 
     FEE_WriteDataFloat(0x00, imu_data.offset.gyro_x);
     FEE_WriteDataFloat(0x04, imu_data.offset.gyro_y);
     FEE_WriteDataFloat(0x08, imu_data.offset.gyro_z);
-
+    FEE_WriteDataFloat(0x0C, imu_data.offset.acc_ratio);
 }
 
 void get_imu_data(struct imu_data_t* data)
@@ -170,9 +177,9 @@ void get_imu_data(struct imu_data_t* data)
     data->raw.gyro_y = raw_gyro_bmi088.y;
     data->raw.gyro_z = raw_gyro_bmi088.z;
     
-    data->acc_x = ((float)raw_accel_bmi088.x * 3 )/32768;
-    data->acc_y = ((float)raw_accel_bmi088.y * 3 )/32768;
-    data->acc_z = ((float)raw_accel_bmi088.z * 3 )/32768;
+    data->acc_x = ((float)raw_accel_bmi088.x * 3 / data->offset.acc_ratio)/32768;
+    data->acc_y = ((float)raw_accel_bmi088.y * 3 / data->offset.acc_ratio)/32768;
+    data->acc_z = ((float)raw_accel_bmi088.z * 3 / data->offset.acc_ratio)/32768;
     data->gyro_x = ((float)raw_gyro_bmi088.x  -  data->offset.gyro_x)* 1000 /32768/57.29578;
     data->gyro_y = ((float)raw_gyro_bmi088.y  -  data->offset.gyro_y)* 1000 /32768/57.29578;
     data->gyro_z = ((float)raw_gyro_bmi088.z  -  data->offset.gyro_z)* 1000 /32768/57.29578;

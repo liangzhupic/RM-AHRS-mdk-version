@@ -389,12 +389,13 @@ void IMUCalulation(struct imu_data_t *data,quaternion *q) {
 #define halfT 1.0/(2.0 * sampleFreq)
 float Kp=0.1;
 float iq0,iq1,iq2,iq3;
+float vx, vy, vz, wx, wy, wz;
 void AHRSupdate(struct imu_data_t *data, quaternion *q)
 {
 
   float norm;
   float hx, hy, hz, bx, bz;
-  float vx, vy, vz, wx, wy, wz;
+  
   float ex, ey, ez;
 
   // auxiliary variables to reduce number of repeated operations
@@ -422,6 +423,11 @@ void AHRSupdate(struct imu_data_t *data, quaternion *q)
   ax = ax / norm;
   ay = ay / norm;
   az = az / norm;
+  
+  if(fabs(norm - 1)>0.3)
+    Kp = 0;
+  else
+    Kp = 0.1;
 
   /*norm = sqrt(mx*mx + my*my + mz*mz);
   mx = mx / norm;
@@ -448,9 +454,9 @@ void AHRSupdate(struct imu_data_t *data, quaternion *q)
   ey = (az*vx - ax*vz) ;//+ (mz*wx - mx*wz);
   ez = (ax*vy - ay*vx) ;//+ (mx*wy - my*wx);
 
-  data->Acc_without_gravity.acc_x = ax - vx;
-  data->Acc_without_gravity.acc_y = ay - vy;
-  data->Acc_without_gravity.acc_z = az - vz;
+  data->Acc_without_gravity.acc_x = data->acc_x - vx;
+  data->Acc_without_gravity.acc_y = data->acc_y - vy;
+  data->Acc_without_gravity.acc_z = data->acc_z - vz;
 
   data->acc_magnitude = sqrtf(data->Acc_without_gravity.acc_x * data->Acc_without_gravity.acc_x \
                 + data->Acc_without_gravity.acc_y * data->Acc_without_gravity.acc_y \
