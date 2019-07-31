@@ -100,6 +100,7 @@ void GetEulerAngle(quaternion * q)
 void AhrsTask(void *p)
 {
     static TimeCounter_t t;
+    static int flag_quaternion_intilized = 0;
     for(;;)
     {
        if(pdTRUE==xSemaphoreTake(ahrs_sem,portMAX_DELAY))
@@ -118,14 +119,33 @@ void AhrsTask(void *p)
               adi_heart_beat--;
            //IMUCalulation(&imu_data ,&NormoliseQuaternion);
            AHRSupdate(&imu_data ,&NormoliseQuaternion);
-           ref_g.x = 2*(NormoliseQuaternion.q1*NormoliseQuaternion.q3 - NormoliseQuaternion.q0*NormoliseQuaternion.q2);
-           ref_g.y = 2*(NormoliseQuaternion.q0*NormoliseQuaternion.q1 + NormoliseQuaternion.q2*NormoliseQuaternion.q3);
-           ref_g.z = 1 - 2*(NormoliseQuaternion.q1*NormoliseQuaternion.q1 + NormoliseQuaternion.q2*NormoliseQuaternion.q2);
+           //ref_g.x = 2*(NormoliseQuaternion.q1*NormoliseQuaternion.q3 - NormoliseQuaternion.q0*NormoliseQuaternion.q2);
+           //ref_g.y = 2*(NormoliseQuaternion.q0*NormoliseQuaternion.q1 + NormoliseQuaternion.q2*NormoliseQuaternion.q3);
+           //ref_g.z = 1 - 2*(NormoliseQuaternion.q1*NormoliseQuaternion.q1 + NormoliseQuaternion.q2*NormoliseQuaternion.q2);
 
            GetEulerAngle(&NormoliseQuaternion);
            ahrs_count++;
-					 if(ahrs_count < 2500)
-						change_recipNorm = 100;
+					 if(ahrs_count < 3000){
+             change_recipNorm = 1;
+             #ifdef Enable_quaternion_initilized_by_Acc
+             float norm = sqrtf(imu_data.acc_x*imu_data.acc_x + imu_data.acc_y*imu_data.acc_y + imu_data.acc_z*imu_data.acc_z);
+             if(fabs(norm - 1) < 0.1 && imu_data.gyro_x < 0.1 && imu_data.gyro_y < 0.1 && imu_data.gyro_z < 0.1 && flag_quaternion_intilized == 0){
+               flag_quaternion_intilized = 1;
+               if(imu_data.acc_z/norm >= 0){
+                 q0 = sqrtf((1.0 + imu_data.acc_z/norm)/2.0);
+                 q1 = imu_data.acc_y/norm/ sqrtf(2.0 * (imu_data.acc_z/norm + 1.0));
+                 q2 = -imu_data.acc_x/norm/ sqrtf(2.0 * (imu_data.acc_z/norm + 1.0));
+                 q3 = 0;
+               }
+               else{
+                 q0 = imu_data.acc_y/norm/ sqrtf(2.0 * (1.0 - imu_data.acc_z/norm));
+                 q1 = sqrtf((1.0 - imu_data.acc_z/norm)/2.0);
+                 q2 = 0;
+                 q3 = imu_data.acc_x/norm/ sqrtf(2.0 * (1.0 - imu_data.acc_z/norm ));
+               }
+             }
+             #endif
+           }
 					 else
 						 change_recipNorm = 100;
            TimeCounter(&t,2);
@@ -389,13 +409,13 @@ void IMUCalulation(struct imu_data_t *data,quaternion *q) {
 #define halfT 1.0/(2.0 * sampleFreq)
 float Kp=0.1;
 float iq0,iq1,iq2,iq3;
-float vx, vy, vz, wx, wy, wz;
+
 void AHRSupdate(struct imu_data_t *data, quaternion *q)
 {
 
   float norm;
   float hx, hy, hz, bx, bz;
-  
+  float vx, vy, vz, wx, wy, wz;
   float ex, ey, ez;
 
   // auxiliary variables to reduce number of repeated operations
@@ -427,7 +447,7 @@ void AHRSupdate(struct imu_data_t *data, quaternion *q)
   if(fabs(norm - 1)>0.3)
     Kp = 0;
   else
-    Kp = 0.1;
+    Kp = 0.03;
 
   /*norm = sqrt(mx*mx + my*my + mz*mz);
   mx = mx / norm;
@@ -462,7 +482,7 @@ void AHRSupdate(struct imu_data_t *data, quaternion *q)
                 + data->Acc_without_gravity.acc_y * data->Acc_without_gravity.acc_y \
                 + data->Acc_without_gravity.acc_z * data->Acc_without_gravity.acc_z);
 
-  if(data->acc_magnitude > 0.3){
+  if(data->acc_magnitude > 0.2){
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, GPIO_PIN_RESET);
   }else{
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, GPIO_PIN_SET);

@@ -12,6 +12,8 @@
 //#define ICM20602 
 #define BMI088   
 
+#define Enable_quaternion_initilized_by_Acc
+
 // Definitions
 
 #define sampleFreq	500		// sample frequency in Hz

@@ -255,6 +255,11 @@
           <WinNumber>1</WinNumber>
           <ItemText>vz</ItemText>
         </Ww>
+        <Ww>
+          <count>15</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>NormoliseQuaternion</ItemText>
+        </Ww>
       </WatchWindow1>
       <WatchWindow2>
         <Ww>
@@ -321,6 +326,21 @@
           <count>12</count>
           <WinNumber>2</WinNumber>
           <ItemText>Kp</ItemText>
+        </Ww>
+        <Ww>
+          <count>13</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>EulerAngle.roll*57.295</ItemText>
+        </Ww>
+        <Ww>
+          <count>14</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>EulerAngle.roll*57.295</ItemText>
+        </Ww>
+        <Ww>
+          <count>15</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>EulerAngle.pitch*57.295</ItemText>
         </Ww>
       </WatchWindow2>
       <MemoryWindow1>
