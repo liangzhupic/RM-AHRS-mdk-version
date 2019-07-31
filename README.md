@@ -32,3 +32,7 @@ e.g.
 //CAN1_Send_Msg(Can_ID+2, (int16_t)(imu_data.Acc_without_gravity.acc_x * 10000), (int16_t)(imu_data.Acc_without_gravity.acc_x * 10000), (int16_t)(imu_data.Acc_without_gravity.acc_x * 10000) , 0, 3);
 ```
 * Red LED will blink 5 times in the initial procedure if sensor isn't calibrated. In this case, sensor offset will be clear to zero and you should calibrate it right now.
+* if you wanna intialize quaternion by accelerator, enable this Macro in file ahrs.h. Otherwise, it will be initialized by assgining [1 0 0 0].
+```c
+ #define Enable_quaternion_initilized_by_Acc
+```
