@@ -61,6 +61,7 @@ struct imu_data_t
     float   gyro_x;
     float   gyro_y;
     float   gyro_z;
+    float   acc_magnitude;
 };
 
 extern uint16_t calibration_time;

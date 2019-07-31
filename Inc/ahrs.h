@@ -49,7 +49,7 @@ struct ref_g_t{
 extern uint8_t mode;
 extern struct euler EulerAngle;
 extern float ahrs_count, ahrs_count_sec;
-extern uint8_t change_recipNorm;
+extern float change_recipNorm;
 
 extern struct ref_g_t ref_g;
 
@@ -66,7 +66,7 @@ extern SemaphoreHandle_t ahrs_sem;
 
 void AHRSCalulation(struct imu_data_t , quaternion*);
 void IMUCalulation(struct imu_data_t* , quaternion*);
-void AHRSupdate(float gx, float gy, float gz, float ax, float ay, float az, float mx, float my, float mz,quaternion *);
+void AHRSupdate(struct imu_data_t *data, quaternion *q);
 
 void AhrsTaskCreate(void);
 void AhrsTask(void*);

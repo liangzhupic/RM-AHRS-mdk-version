@@ -61,7 +61,7 @@ void bmi_initialize(void)
   if(rslt == BMI08X_OK) 
   {
     /* Assign the desired configurations */
-    dev.accel_cfg.bw = BMI08X_ACCEL_BW_NORMAL;
+    dev.accel_cfg.bw = BMI08X_ACCEL_BW_OSR4;
     dev.accel_cfg.odr = BMI08X_ACCEL_ODR_50_HZ;
     dev.accel_cfg.range = BMI088_ACCEL_RANGE_3G;
     dev.accel_cfg.power = BMI08X_ACCEL_PM_ACTIVE;

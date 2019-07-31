@@ -7,7 +7,7 @@
 #include "icm_20602.h"
 #include "can.h"
 
-uint8_t change_recipNorm = 0;
+float change_recipNorm = 1;
 float ahrs_count=0,ahrs_count_sec;
 
 SemaphoreHandle_t ahrs_sem;
@@ -116,23 +116,18 @@ void AhrsTask(void *p)
            }
            if(adi_heart_beat > 0)
               adi_heart_beat--;
-           IMUCalulation(&imu_data ,&NormoliseQuaternion);
+           //IMUCalulation(&imu_data ,&NormoliseQuaternion);
+           AHRSupdate(&imu_data ,&NormoliseQuaternion);
            ref_g.x = 2*(NormoliseQuaternion.q1*NormoliseQuaternion.q3 - NormoliseQuaternion.q0*NormoliseQuaternion.q2);
            ref_g.y = 2*(NormoliseQuaternion.q0*NormoliseQuaternion.q1 + NormoliseQuaternion.q2*NormoliseQuaternion.q3);
            ref_g.z = 1 - 2*(NormoliseQuaternion.q1*NormoliseQuaternion.q1 + NormoliseQuaternion.q2*NormoliseQuaternion.q2);
 
-//           acc_normol = acc_normol * 0.98 + (ref_g.x * Acc.x + ref_g.y * Acc.y + ref_g.z * Acc.z)* 0.02;
-//           acc_vertical = (8.0/65536)* acc_normol - 1.08;
-
-//           AHRSCalulation(&Acc,&Gyro,&Mag,&NormoliseQuaternion);
-
-//           AHRSupdate(gx,gy,gz, Acc.x,Acc.y,Acc.z,Mag.x,Mag.y,Mag.z,&NormoliseQuaternion);
            GetEulerAngle(&NormoliseQuaternion);
            ahrs_count++;
 					 if(ahrs_count < 2500)
-						change_recipNorm = 1;
+						change_recipNorm = 100;
 					 else
-						 change_recipNorm = 8;
+						 change_recipNorm = 100;
            TimeCounter(&t,2);
            switch (mode) {
            case 0x10:
@@ -326,6 +321,16 @@ void IMUCalulation(struct imu_data_t *data,quaternion *q) {
         data->Acc_without_gravity.acc_y = ay - vy;
         data->Acc_without_gravity.acc_z = az - vz;
       
+        data->acc_magnitude = sqrtf(data->Acc_without_gravity.acc_x * data->Acc_without_gravity.acc_x \
+                      + data->Acc_without_gravity.acc_y * data->Acc_without_gravity.acc_y \
+                      + data->Acc_without_gravity.acc_z * data->Acc_without_gravity.acc_z);
+      
+        if(data->acc_magnitude > 0.3){
+          HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, GPIO_PIN_RESET);
+        }else{
+          HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, GPIO_PIN_SET);
+        }
+        
         // Auxiliary variables to avoid repeated arithmetic
         _2q0 = 2.0f * q0;
         _2q1 = 2.0f * q1;
@@ -346,7 +351,7 @@ void IMUCalulation(struct imu_data_t *data,quaternion *q) {
         s1 = _4q1 * q3q3 - _2q3 * ax + 4.0f * q0q0 * q1 - _2q0 * ay - _4q1 + _8q1 * q1q1 + _8q1 * q2q2 + _4q1 * az;
         s2 = 4.0f * q0q0 * q2 + _2q0 * ax + _4q2 * q3q3 - _2q3 * ay - _4q2 + _8q2 * q1q1 + _8q2 * q2q2 + _4q2 * az;
         s3 = 4.0f * q1q1 * q3 - _2q1 * ax + 4.0f * q2q2 * q3 - _2q2 * ay;
-        recipNorm = invSqrt(s0 * s0 + s1 * s1 + s2 * s2 + s3 * s3)/change_recipNorm; // normalise step magnitude
+        recipNorm = invSqrt(s0 * s0 + s1 * s1 + s2 * s2 + s3 * s3)/(change_recipNorm); // normalise step magnitude
         s0 *= recipNorm;
         s1 *= recipNorm;
         s2 *= recipNorm;
@@ -381,10 +386,10 @@ void IMUCalulation(struct imu_data_t *data,quaternion *q) {
 }
 
 
-#define halfT 0.001
-float Kp=0.5;
+#define halfT 1.0/(2.0 * sampleFreq)
+float Kp=0.1;
 float iq0,iq1,iq2,iq3;
-void AHRSupdate(float gx, float gy, float gz, float ax, float ay, float az, float mx, float my, float mz,quaternion *q)
+void AHRSupdate(struct imu_data_t *data, quaternion *q)
 {
 
   float norm;
@@ -406,13 +411,19 @@ void AHRSupdate(float gx, float gy, float gz, float ax, float ay, float az, floa
 
   // normalise the measurements
 
+  float ax= data->acc_x;
+  float ay= data->acc_y;
+  float az= data->acc_z;
+  float gx= data->gyro_x;
+  float gy= data->gyro_y;
+  float gz= data->gyro_z;
 
   norm = sqrt(ax*ax + ay*ay + az*az);
   ax = ax / norm;
   ay = ay / norm;
   az = az / norm;
 
-  norm = sqrt(mx*mx + my*my + mz*mz);
+  /*norm = sqrt(mx*mx + my*my + mz*mz);
   mx = mx / norm;
   my = my / norm;
   mz = mz / norm;
@@ -422,7 +433,7 @@ void AHRSupdate(float gx, float gy, float gz, float ax, float ay, float az, floa
   hy = 2*mx*(q1q2 + q0q3) + 2*my*(0.5 - q1q1 - q3q3) + 2*mz*(q2q3 - q0q1);
   hz = 2*mx*(q1q3 - q0q2) + 2*my*(q2q3 + q0q1) + 2*mz*(0.5 - q1q1 - q2q2);
   bx = sqrt((hx*hx) + (hy*hy));
-  bz = hz;
+  bz = hz;*/
 
   // estimated direction of gravity and flux (v and w)
   vx = 2*(q1q3 - q0q2);
@@ -437,6 +448,19 @@ void AHRSupdate(float gx, float gy, float gz, float ax, float ay, float az, floa
   ey = (az*vx - ax*vz) ;//+ (mz*wx - mx*wz);
   ez = (ax*vy - ay*vx) ;//+ (mx*wy - my*wx);
 
+  data->Acc_without_gravity.acc_x = ax - vx;
+  data->Acc_without_gravity.acc_y = ay - vy;
+  data->Acc_without_gravity.acc_z = az - vz;
+
+  data->acc_magnitude = sqrtf(data->Acc_without_gravity.acc_x * data->Acc_without_gravity.acc_x \
+                + data->Acc_without_gravity.acc_y * data->Acc_without_gravity.acc_y \
+                + data->Acc_without_gravity.acc_z * data->Acc_without_gravity.acc_z);
+
+  if(data->acc_magnitude > 0.3){
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, GPIO_PIN_RESET);
+  }else{
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, GPIO_PIN_SET);
+  }
   // integral error scaled integral gain
   /*exInt = exInt + ex*Ki;
   eyInt = eyInt + ey*Ki;
