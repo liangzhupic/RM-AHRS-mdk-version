@@ -20,6 +20,7 @@ void    calibrate_imu(int n)
     imu_data.offset.gyro_x = 0;
     imu_data.offset.gyro_y = 0;
     imu_data.offset.gyro_z = 0;
+    double acc_ratio_offset = 0;
 
     for(int i = 0; i< n; i++)
     {
@@ -31,6 +32,8 @@ void    calibrate_imu(int n)
         offset_gyro_x += imu_data.raw.gyro_x;
         offset_gyro_y += imu_data.raw.gyro_y;
         offset_gyro_z += imu_data.raw.gyro_z;
+        
+        acc_ratio_offset += sqrt(imu_data.acc_x * imu_data.acc_x + imu_data.acc_y * imu_data.acc_y + imu_data.acc_z * imu_data.acc_z);
     }
     
     HAL_GPIO_WritePin(GPIOB, GPIO_PIN_11, GPIO_PIN_SET);
@@ -38,10 +41,12 @@ void    calibrate_imu(int n)
     imu_data.offset.gyro_x = offset_gyro_x/n;
     imu_data.offset.gyro_y = offset_gyro_y/n;
     imu_data.offset.gyro_z = offset_gyro_z/n;
+    imu_data.offset.acc_ratio = imu_data.offset.acc_ratio = acc_ratio_offset/n;
 
     FEE_WriteDataFloat(0x00, imu_data.offset.gyro_x);
     FEE_WriteDataFloat(0x04, imu_data.offset.gyro_y);
     FEE_WriteDataFloat(0x08, imu_data.offset.gyro_z);
+    FEE_WriteDataFloat(0x0C, imu_data.offset.acc_ratio);
 
 }
 
@@ -59,9 +64,9 @@ void   get_imu_data(struct imu_data_t* data)
     // convert data in standard unit
     // accelerometer 2g
     // gyroscope 1000deg/s
-    data->acc_x = ((float)data->raw.acc_x * 2 )/32768;
-    data->acc_y = ((float)data->raw.acc_y * 2 )/32768;
-    data->acc_z = ((float)data->raw.acc_z * 2 )/32768;
+    data->acc_x = ((float)data->raw.acc_x * 2 / data->offset.acc_ratio)/32768;
+    data->acc_y = ((float)data->raw.acc_y * 2 / data->offset.acc_ratio)/32768;
+    data->acc_z = ((float)data->raw.acc_z * 2 / data->offset.acc_ratio)/32768;
     data->gyro_x = ((float)data->raw.gyro_x  -  data->offset.gyro_x)* 1000 /32768/57.29578;
     data->gyro_y = ((float)data->raw.gyro_y  -  data->offset.gyro_y)* 1000 /32768/57.29578;
     data->gyro_z = ((float)data->raw.gyro_z  -  data->offset.gyro_z)* 1000 /32768/57.29578;
@@ -119,6 +124,9 @@ void    initlize_icm(void)
         HAL_Delay(80);
       }
     }
+    imu_data.offset.acc_ratio = FEE_ReadDataFloat(0x0C);
+    if(isnan(imu_data.offset.acc_ratio))
+      imu_data.offset.acc_ratio = 1;
     
     HAL_GPIO_WritePin(GPIOB, GPIO_PIN_11, GPIO_PIN_SET);
 }
